@@ -92,6 +92,10 @@
                 var shift = serie.data.length > 40;
                 serie.addPoint([Date.parse(sample.timestamp), sample.totalPower], true, shift);
             });
+    };
+    var powerSampleEventSource = new EventSource(/*[[@{|/zones/${zone.id}/updates|}]]*/ "/zones/zoneId/updates");
+    powerSampleEventSource.onmessage = function (e) {
+        appendPowerData(JSON.parse(e.data));
     }
 </script>
 </body>
