@@ -1,5 +1,9 @@
 package com.example.meter.dashboard.web;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 import com.example.meter.dashboard.DashboardProperties;
 import com.example.meter.dashboard.generator.ZoneDescriptorRepository;
 import com.example.meter.dashboard.sampling.PowerGridSample;
@@ -9,9 +13,11 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.reactive.result.view.Rendering;
 
 @Controller
@@ -53,6 +59,14 @@ public class DashboardController {
 						.modelAttribute("zone", zoneDescriptor)
 						.modelAttribute("samples", latestSamples)
 						.build());
+	}
+
+	@GetMapping(path = "/zones/{zoneId}/updates", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	@ResponseBody
+	public Flux<PowerGridSample> streamUpdates(@PathVariable String zoneId) {
+		Instant startup = LocalDateTime.now().withSecond(0).toInstant(ZoneOffset.UTC);
+		return this.powerGridSampleRepository
+				.findWithTailableCursorByZoneIdAndTimestampAfter(zoneId, startup);
 	}
 
 }
