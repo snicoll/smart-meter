@@ -1,0 +1,22 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+meter:
+  aggregator:
+    generator:
+      zones:
+        urb1:
+          name: Urban Area One
+          devicesCount: 50
+        urb2:
+          name: Urban Area Two
+          devicesCount: 60
+        fin1:
+          name: Financial District
+          devicesCount: 20
+          powerLow: 4000
+          powerHigh: 6000
+server:
+  port: 8081
