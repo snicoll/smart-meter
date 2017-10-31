@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Smart Meter Dashboard for Zone [[|${zone.name}|]]</title>
+
+    <link data-th-href="@{/webjars/bulma/0.6.0/css/bulma.css}" rel="stylesheet">
+    <link rel="stylesheet" data-th-href="@{/webjars/font-awesome/4.7.0/css/font-awesome.min.css}"/>
+    <link rel="stylesheet" data-th-href="@{/webjars/highcharts/6.0.2/css/highcharts.css}"/>
+    <script type="text/javascript" data-th-src="@{/webjars/highcharts/6.0.2/highcharts.js}"></script>
+    <style>
+        #events {
+            max-height: 10rem;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+<body>
+<section class="hero is-primary is-bold">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                <i class="fa fa-bolt" aria-hidden="true"></i>&nbsp;Smart Meter Dashboard
+            </h1>
+        </div>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        <h2 class="title has-text-centered">
+            Power data for Zone "[[|${zone.name}|]]"
+        </h2>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="container">
+            <div id="chart" style="height: 400px; min-width: 310px"></div>
+        </div>
+    </div>
+</section>
+<section class="section">
+    <h2 class="title">
+        <i class="fa fa-plug" aria-hidden="true"></i>&nbsp;Zone events
+    </h2>
+    <div class="box">
+        <div id="events">
+            <p data-th-each="event: ${eventStream}">[[${#temporals.formatISO(event.timestamp)}]] -
+                [[${event.deviceId}]] - <a data-th-href="@{|/zones/${event.zoneId}|}">Zone [[|${event.zoneId}|]]</a></p>
+        </div>
+    </div>
+</section>
+
+<script data-th-inline="javascript">
+    var rawSamples = /*[[${samples}]]*/ {};
+    var data = rawSamples.map(function (s) {
+        return [Date.parse(s.timestamp), s.totalPower]
+    })
+        .sort(function (a, b) {
+            return a[0] - b[0]
+        });
+    var chart = new Highcharts.chart('chart', {
+        title: {
+            text: 'Power usage'
+        },
+        yAxis: {
+            title: {
+                text: 'Power (W)'
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle'
+        },
+        xAxis: {
+            type: 'datetime'
+        },
+        series: [{
+            name: /*[[${zone.id}]]*/ 'zone',
+            data: data
+        }]
+    });
+    var appendPowerData = function (sample) {
+        chart.series
+            .filter(function (serie) {
+                return serie.name == sample.zoneId
+            })
+            .forEach(function (serie) {
+                var shift = serie.data.length > 40;
+                serie.addPoint([Date.parse(sample.timestamp), sample.totalPower], true, shift);
+            });
+    }
+</script>
+</body>
+</html>
