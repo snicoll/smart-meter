@@ -24,7 +24,28 @@
 
 	<modules>
 		<module>smart-meter-aggregator</module>
+		<module>smart-meter-dashboard</module>
 	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.webjars.npm</groupId>
+				<artifactId>bulma</artifactId>
+				<version>0.6.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.webjars.npm</groupId>
+				<artifactId>font-awesome</artifactId>
+				<version>4.7.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.webjars</groupId>
+				<artifactId>highcharts</artifactId>
+				<version>6.0.2</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>
