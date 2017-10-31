@@ -31,6 +31,14 @@ public class DashboardController {
 		this.zoneDescriptorRepository = zoneDescriptorRepository;
 	}
 
+	@GetMapping("/")
+	public Rendering home() {
+		return Rendering
+				.view("index")
+				.modelAttribute("zones", this.zoneDescriptorRepository.findAll())
+				.build();
+	}
+
 	@GetMapping("/zones/{zoneId}")
 	public Mono<Rendering> displayZone(@PathVariable String zoneId) {
 		PageRequest pageRequest = PageRequest.of(0, this.historySize,
