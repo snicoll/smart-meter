@@ -96,6 +96,12 @@
     var powerSampleEventSource = new EventSource(/*[[@{|/zones/${zone.id}/updates|}]]*/ "/zones/zoneId/updates");
     powerSampleEventSource.onmessage = function (e) {
         appendPowerData(JSON.parse(e.data));
+    };
+    var powerEvents = new EventSource(/*[[@{|/zones/events|}]]*/ "/zones/events");
+    var eventsElement = document.querySelector("#events");
+    powerEvents.onmessage = function (e) {
+        eventsElement.innerHTML += e.data;
+        eventsElement.scrollTop = eventsElement.scrollHeight;
     }
 </script>
 </body>
