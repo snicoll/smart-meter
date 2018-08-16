@@ -1,0 +1,76 @@
+= Smart Meter
+
+This sample project is used as live demo material for "Spring Boot 2.0 Web Applications".
+The recording of the session is https://www.youtube.com/watch?v=Q-9bUsrLVpI[available
+here].
+
+== Building
+To build this project, you need Java 1.8, Maven 3.5 and a bash-like shell.
+
+Just invoke the following at the root of the project:
+
+[indent=0]
+----
+	$ mvn clean install
+----
+
+== Running
+To run this project, you also need a mongo server running your machine with default
+settings. If mongo is running somewhere else, please refer
+https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-connecting-to-mongodb[to the documentation]
+to know more how you can configure Spring Boot to use that custom location.
+
+TIP: This assumes that you are running the application on the command line. You can also
+very easily run this application from your IDE.
+
+First start the aggregator, from the root of the project:
+
+[indent=0]
+----
+	$ cd smart-meter-aggregator
+	$ mvn spring-boot:run
+----
+
+You should be able to check that the aggregator is running by issuing the following
+command:
+
+[indent=0]
+----
+	$ curl http://localhost:8081/measures/firehose
+----
+
+If you prefer to use `HTTPie` you can use this command:
+
+[indent=0]
+----
+	$ http :8081/measures/firehose --stream
+----
+
+Once you've made sure the aggregator is running, you can start the dasbhoard. From the
+root of the project:
+
+[indent=0]
+----
+	$ cd smart-meter-dashboard
+	$ mvn spring-boot:run
+----
+
+If you go to `http://localhost:8080` you should see a list of zones. If you click on one
+of them, you should see a graph updating itself every 10s
+
+TIP: Initially the graph is empty as there is no data. Please wait a bit for the
+application to collect metrics from the aggregator.
+
+== Cleaning old data
+If you've been running this project a long time ago, the application will try to fetch
+the latest 40 entries which may create a huge gap. To restart from scratch you can remove
+the collection in MongoDB.
+
+If the dashboard is running, stop it first and then invoke the following:
+
+[indent=0]
+----
+	$ mongo
+	> db.powergridsamples.drop()
+----
+
